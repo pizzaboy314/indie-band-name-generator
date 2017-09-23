@@ -9,21 +9,18 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -47,6 +44,8 @@ public class Worker {
 	private static List<String> firstMNamesList;
 	private static List<String> firstFNamesList;
 	
+	private static List<String> grammars;
+	
 	public static void main(String[] args) {
 		resultWindow();
 		
@@ -58,14 +57,81 @@ public class Worker {
 //		}
 		
 		populateDictionaries();
+		populateGrammars();
+		String bandname = generateBandName();
 
-		resultString = "\n\n\n\n\t\tBAND NAME HERE";
+		resultString = bandname;
 		resultText.setText(resultString);
 		resultFrame.setVisible(true);
 		resultFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		System.out.println();
 
+	}
+	
+	public static String generateBandName(){
+		long seed1 = System.currentTimeMillis();
+		long seed2 = System.currentTimeMillis()+123456;
+		
+		String grammarString = grammars.get(randInt(0,grammars.size()-1,seed1));
+		
+		String nounString1 = nounsList.get(randInt(0,nounsList.size()-1,seed1));
+		String adjString1 = adjsList.get(randInt(0,adjsList.size()-1,seed1));
+		String nounString2 = nounsList.get(randInt(0,nounsList.size()-1,seed2));
+		String adjString2 = adjsList.get(randInt(0,adjsList.size()-1,seed2));
+		
+		
+		String lastNameString = lastNamesList.get(randInt(0,lastNamesList.size()-1,seed1));
+		String firstMNameString = firstMNamesList.get(randInt(0,firstMNamesList.size()-1,seed1));
+		String firstFNameString = firstFNamesList.get(randInt(0,firstFNamesList.size()-1,seed1));
+		
+		String name = "";
+		
+		if(grammarString.equals("AdjNoun")){
+			name = adjString1 + " " + nounString1;
+		} else if(grammarString.equals("Adj Noun")){
+			name = adjString1 + " " + nounString1;
+		} else if(grammarString.equals("The Adj Nouns")){
+			name = "The " + adjString1 + " " + nounString1 + "s";
+		} else if(grammarString.equals("Noun Noun")){
+			name = nounString1 + " " + nounString2;
+		} else if(grammarString.equals("Male Last and the Adj Nouns")){
+			name = firstMNameString + " " + lastNameString + " and the " + adjString1 + " " + nounString1 + "s";
+		} else if(grammarString.equals("Female Last and the Adj Nouns")){
+			name = firstFNameString + " " + lastNameString + " and the " + adjString1 + " " + nounString1 + "s";
+		} else if(grammarString.equals("Adj Noun and the Adj Nouns")){
+			name = adjString1 + " " + nounString1 + " and the " + adjString2 + " " + nounString2 + "s";
+		} else if(grammarString.equals("Adj Last")){
+			name = adjString1 + " " + lastNameString;
+		}
+		
+		return name;
+	}
+	
+	public static void populateGrammars(){
+		grammars = new ArrayList<String>();
+		
+		grammars.add("AdjNoun");
+		grammars.add("Adj Noun");
+		grammars.add("The Adj Nouns");
+		grammars.add("Noun Noun");
+		grammars.add("Male Last and the Adj Nouns");
+		grammars.add("Female Last and the Adj Nouns");
+		grammars.add("Adj Noun and the Adj Nouns");
+		grammars.add("Adj Last");
+	}
+	
+	// https://stackoverflow.com/a/20389922
+	public static int randInt(int min, int max, long seed) {
+
+	    // Usually this can be a field rather than a method variable
+	    Random rand = new Random(seed);
+
+	    // nextInt is normally exclusive of the top value,
+	    // so add 1 to make it inclusive
+	    int randomNum = rand.nextInt((max - min) + 1) + min;
+
+	    return randomNum;
 	}
 	
 	public static void populateDictionaries(){

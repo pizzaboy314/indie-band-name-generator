@@ -41,6 +41,12 @@ public class Worker {
 	private static File resultFile;
 	private static String resultString;
 	
+	private static List<String> nounsList;
+	private static List<String> adjsList;
+	private static List<String> lastNamesList;
+	private static List<String> firstMNamesList;
+	private static List<String> firstFNamesList;
+	
 	public static void main(String[] args) {
 		resultWindow();
 		
@@ -50,6 +56,8 @@ public class Worker {
 //		if (false) { //something bad with user input happens
 //			System.exit(0);
 //		}
+		
+		populateDictionaries();
 
 		resultString = "\n\n\n\n\t\tBAND NAME HERE";
 		resultText.setText(resultString);
@@ -58,6 +66,66 @@ public class Worker {
 
 		System.out.println();
 
+	}
+	
+	public static void populateDictionaries(){
+		String nounsURL = "https://raw.githubusercontent.com/pizzaboy314/indie-band-name-generator/master/dictionary%20files/nounslist.txt";
+		String adjsURL = "https://raw.githubusercontent.com/pizzaboy314/indie-band-name-generator/master/dictionary%20files/adjectiveslist.txt";
+		
+		String lastNamesURL = "https://raw.githubusercontent.com/pizzaboy314/indie-band-name-generator/master/dictionary%20files/lastnames.txt";
+		String firstMNamesURL = "https://raw.githubusercontent.com/pizzaboy314/indie-band-name-generator/master/dictionary%20files/firstmalenames.txt";
+		String firstFNamesURL = "https://raw.githubusercontent.com/pizzaboy314/indie-band-name-generator/master/dictionary%20files/firstfemalenames.txt";
+		
+		nounsList = parseWords(nounsURL);
+		adjsList = parseWords(adjsURL);
+		lastNamesList = parseWords(lastNamesURL);
+		firstMNamesList = parseWords(firstMNamesURL);
+		firstFNamesList = parseWords(firstFNamesURL);
+		
+	}
+	
+	public static List<String> parseWords(String url){
+		List<String> list = new ArrayList<String>();
+		
+		
+		try {
+			URL source = null;
+			boolean valid = true;
+			try {
+				source = new URL(url);
+			} catch (MalformedURLException e) {
+				valid = false;
+			}
+			while (valid == false) {
+				valid = true;
+				url = (String) JOptionPane.showInputDialog(null, "Malformed URL format. Are you sure you copied the entire URL?\n" + "Try again:",
+						"Provide URL", JOptionPane.PLAIN_MESSAGE, null, null, null);
+				try {
+					source = new URL(url);
+				} catch (MalformedURLException e) {
+					valid = false;
+				}
+			}
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(source.openStream()));
+
+			String inputLine = in.readLine();
+			while (inputLine != null) {
+				String[] split = inputLine.trim().split("\\s|$");
+				String s = split[0].toLowerCase();
+				s = s.substring(0, 1).toUpperCase() + s.substring(1);
+
+				list.add(s);
+				inputLine = in.readLine();
+			}
+
+			
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return list;
 	}
 	
 	public synchronized static void resultWindow() {

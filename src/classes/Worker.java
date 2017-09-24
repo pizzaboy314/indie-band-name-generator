@@ -46,21 +46,34 @@ public class Worker {
 	
 	private static List<String> grammars;
 	
+	private static Integer numNames;
+	
+	private static Random rand;
+	
 	public static void main(String[] args) {
 		resultWindow();
 		
-		System.out.println();
-		System.out.println();
+		rand = new Random();
 		
-//		if (false) { //something bad with user input happens
-//			System.exit(0);
-//		}
+		String numString = (String) JOptionPane.showInputDialog(null,
+				"Enter number of band names to generate: ", "enter number of band names to generate",
+				JOptionPane.PLAIN_MESSAGE, null, null, null);
+
+		if (numString == null || numString.equals("")) {
+			System.exit(0);
+		} else {
+			numNames = Integer.parseInt(numString);
+		}
 		
 		populateDictionaries();
 		populateGrammars();
-		String bandname = generateBandName();
-
-		resultString = bandname;
+		
+		StringBuilder sb = new StringBuilder();
+		for(int i=0; i < numNames.intValue(); i++){
+			sb.append(generateBandName(i) + "\n");
+		}
+		
+		resultString = sb.toString();
 		resultText.setText(resultString);
 		resultFrame.setVisible(true);
 		resultFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -69,21 +82,18 @@ public class Worker {
 
 	}
 	
-	public static String generateBandName(){
-		long seed1 = System.currentTimeMillis();
-		long seed2 = System.currentTimeMillis()+123456;
+	public static String generateBandName(long seedInt){
+		String grammarString = grammars.get(randInt(0,grammars.size()-1));
 		
-		String grammarString = grammars.get(randInt(0,grammars.size()-1,seed1));
-		
-		String nounString1 = nounsList.get(randInt(0,nounsList.size()-1,seed1));
-		String adjString1 = adjsList.get(randInt(0,adjsList.size()-1,seed1));
-		String nounString2 = nounsList.get(randInt(0,nounsList.size()-1,seed2));
-		String adjString2 = adjsList.get(randInt(0,adjsList.size()-1,seed2));
+		String nounString1 = nounsList.get(randInt(0,nounsList.size()-1));
+		String adjString1 = adjsList.get(randInt(0,adjsList.size()-1));
+		String nounString2 = nounsList.get(randInt(0,nounsList.size()-1));
+		String adjString2 = adjsList.get(randInt(0,adjsList.size()-1));
 		
 		
-		String lastNameString = lastNamesList.get(randInt(0,lastNamesList.size()-1,seed1));
-		String firstMNameString = firstMNamesList.get(randInt(0,firstMNamesList.size()-1,seed1));
-		String firstFNameString = firstFNamesList.get(randInt(0,firstFNamesList.size()-1,seed1));
+		String lastNameString = lastNamesList.get(randInt(0,lastNamesList.size()-1));
+		String firstMNameString = firstMNamesList.get(randInt(0,firstMNamesList.size()-1));
+		String firstFNameString = firstFNamesList.get(randInt(0,firstFNamesList.size()-1));
 		
 		String name = "";
 		
@@ -122,10 +132,7 @@ public class Worker {
 	}
 	
 	// https://stackoverflow.com/a/20389922
-	public static int randInt(int min, int max, long seed) {
-
-	    // Usually this can be a field rather than a method variable
-	    Random rand = new Random(seed);
+	public static int randInt(int min, int max) {
 
 	    // nextInt is normally exclusive of the top value,
 	    // so add 1 to make it inclusive

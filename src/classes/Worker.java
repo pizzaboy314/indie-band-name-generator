@@ -21,18 +21,29 @@ import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 
-public class Worker {
+public class Worker extends JPanel implements ActionListener{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static JFrame resultFrame;
+	private static int resultFrameBoundX;
+	private static int resultFrameBoundY;
+	private static int resultFrameBoundWidth;
+	private static int resultFrameBoundHeight;
+	
 	private static JTextArea resultText;
 	private static JFileChooser fc;
 	private static File resultFile;
@@ -47,6 +58,7 @@ public class Worker {
 	private static List<String> grammars;
 	
 	private static Integer numNames;
+	private static Integer numNamesInit = 10;
 	
 	private static Random rand;
 	
@@ -55,15 +67,17 @@ public class Worker {
 		
 		rand = new Random();
 		
-		String numString = (String) JOptionPane.showInputDialog(null,
-				"Enter number of band names to generate: ", "enter number of band names to generate",
-				JOptionPane.PLAIN_MESSAGE, null, null, null);
-
-		if (numString == null || numString.equals("")) {
-			System.exit(0);
-		} else {
-			numNames = Integer.parseInt(numString);
-		}
+//		String numString = (String) JOptionPane.showInputDialog(null,
+//				"Enter number of band names to generate: ", "enter number of band names to generate",
+//				JOptionPane.PLAIN_MESSAGE, null, null, null);
+//
+//		if (numString == null || numString.equals("")) {
+//			System.exit(0);
+//		} else {
+//			numNames = Integer.parseInt(numString);
+//		}
+		
+		numNames = numNamesInit;
 		
 		populateDictionaries();
 		populateGrammars();
@@ -201,8 +215,12 @@ public class Worker {
 		return list;
 	}
 	
+    public void actionPerformed(ActionEvent e) {
+        // do things
+    }
+	
 	public synchronized static void resultWindow() {
-		resultFrame = new JFrame("Results");
+		resultFrame = new JFrame("Indie Band Name Generator");
 		File resultPath = new File(System.getProperty("user.dir"));
 		fc = new JFileChooser(resultPath);
 
@@ -212,9 +230,11 @@ public class Worker {
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension frameSize = new Dimension((int) (screenSize.width / 2), (int) (screenSize.height / 2));
-		int x = (int) (frameSize.width / 2);
-		int y = (int) (frameSize.height / 2);
-		resultFrame.setBounds(x, y, 600, frameSize.height);
+		resultFrameBoundX = (int) (frameSize.width / 2);
+		resultFrameBoundY = (int) (frameSize.height / 2);
+		resultFrameBoundWidth = 450;
+		resultFrameBoundHeight = frameSize.height;
+		resultFrame.setBounds(resultFrameBoundX, resultFrameBoundY, resultFrameBoundWidth, resultFrameBoundHeight);
 
 		resultText = new JTextArea();
 		resultText.setText("");
@@ -243,12 +263,48 @@ public class Worker {
 				}
 			}
 		});
-		JPanel controls = new JPanel();
-		controls.setLayout(new FlowLayout());
-		controls.add(saveFile);
+		JButton gbutton = new JButton("Generate Band Name");
+		gbutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				StringBuilder sb = new StringBuilder();
+				for(int i=0; i < numNames.intValue(); i++){
+					sb.append(generateBandName(i) + "\n");
+				}
+
+				resultString = sb.toString();
+				resultText.setText(resultString);
+			}
+		});
+		
+		JTextField numNamesField = new JTextField(10);
+		numNamesField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String s = numNamesField.getText();
+
+				try {
+					numNames = Integer.parseInt(s);
+				} catch (NumberFormatException nfe){
+					numNames = numNamesInit;
+					numNamesField.setText(numNames.toString());
+				}
+			}
+		});
+		numNamesField.setText(numNamesInit.toString());
+		numNamesField.setMinimumSize(new Dimension(12, 12));
+		
+		JPanel generateControls = new JPanel();
+		generateControls.setLayout(new FlowLayout());
+		generateControls.add(gbutton);
+		generateControls.add(new JLabel("  Number of Names: "));
+		generateControls.add(numNamesField);
+		
+		JPanel saveControls = new JPanel();
+		saveControls.setLayout(new FlowLayout());
+		saveControls.add(saveFile);
 
 		resultFrame.getContentPane().add(new JScrollPane(resultText), BorderLayout.CENTER);
-		resultFrame.getContentPane().add(controls, BorderLayout.SOUTH);
+		resultFrame.getContentPane().add(saveControls, BorderLayout.SOUTH);
+		resultFrame.getContentPane().add(generateControls, BorderLayout.NORTH);
 	}
 
 }

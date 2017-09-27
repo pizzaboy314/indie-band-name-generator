@@ -27,7 +27,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -277,16 +280,34 @@ public class Worker extends JPanel implements ActionListener{
 		});
 		
 		JTextField numNamesField = new JTextField(10);
-		numNamesField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String s = numNamesField.getText();
+		numNamesField.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				updateNum();
+			}
 
-				try {
-					numNames = Integer.parseInt(s);
-				} catch (NumberFormatException nfe){
-					numNames = numNamesInit;
-					numNamesField.setText(numNames.toString());
-				}
+			public void removeUpdate(DocumentEvent e) {
+				updateNum();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				updateNum();
+			}
+			
+			public void updateNum() {
+				Runnable doTextUpdate = new Runnable() {
+			        @Override
+			        public void run() {
+						String s = numNamesField.getText();
+
+						try {
+							numNames = Integer.parseInt(s);
+						} catch (NumberFormatException nfe){
+							numNames = numNamesInit;
+							numNamesField.setText(numNames.toString());
+						}
+			        }
+			    };       
+			    SwingUtilities.invokeLater(doTextUpdate);
 			}
 		});
 		numNamesField.setText(numNamesInit.toString());

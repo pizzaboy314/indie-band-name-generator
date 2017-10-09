@@ -130,6 +130,10 @@ public class Worker extends JPanel implements ActionListener{
 			name = adjString1 + " " + nounString1 + " and the " + adjString2 + " " + nounString2 + "s";
 		} else if(grammarString.equals("Adj Last")){
 			name = adjString1 + " " + lastNameString;
+		} else if(grammarString.equals("The Nouns")){
+			name = "The " + nounString1 + "s";
+		} else if(grammarString.equals("Noun of Nouns")){
+			name = nounString1 + " of " + nounString2 + "s";
 		}
 		
 		return name;
@@ -146,6 +150,8 @@ public class Worker extends JPanel implements ActionListener{
 		grammars.add("Female Last and the Adj Nouns");
 		grammars.add("Adj Noun and the Adj Nouns");
 		grammars.add("Adj Last");
+		grammars.add("The Nouns");
+		grammars.add("Noun of Nouns");
 	}
 	
 	// https://stackoverflow.com/a/20389922

@@ -57,6 +57,7 @@ public class Worker extends JPanel implements ActionListener{
 	private static List<String> lastNamesList;
 	private static List<String> firstMNamesList;
 	private static List<String> firstFNamesList;
+	private static List<String> verbList;
 	
 	private static List<String> grammars;
 	
@@ -107,6 +108,7 @@ public class Worker extends JPanel implements ActionListener{
 		String nounString2 = nounsList.get(randInt(0,nounsList.size()-1));
 		String adjString2 = adjsList.get(randInt(0,adjsList.size()-1));
 		
+		String verbString = verbList.get(randInt(0,verbList.size()-1));
 		
 		String lastNameString = lastNamesList.get(randInt(0,lastNamesList.size()-1));
 		String firstMNameString = firstMNamesList.get(randInt(0,firstMNamesList.size()-1));
@@ -122,10 +124,10 @@ public class Worker extends JPanel implements ActionListener{
 			name = "The " + adjString1 + " " + nounString1 + "s";
 		} else if(grammarString.equals("Noun Noun")){
 			name = nounString1 + " " + nounString2;
-		} else if(grammarString.equals("Male Last and the Adj Nouns")){
-			name = firstMNameString + " " + lastNameString + " and the " + adjString1 + " " + nounString1 + "s";
-		} else if(grammarString.equals("Female Last and the Adj Nouns")){
-			name = firstFNameString + " " + lastNameString + " and the " + adjString1 + " " + nounString1 + "s";
+		} else if(grammarString.equals("First Last & the Adj Nouns")){
+			name = (randBool() ? firstMNameString : firstFNameString) + (randBool() ? " " + lastNameString : "");
+			name += " & the ";
+			name += (randBool() ? adjString1 + " " : "") + nounString1 + "s";
 		} else if(grammarString.equals("Adj Noun and the Adj Nouns")){
 			name = adjString1 + " " + nounString1 + " and the " + adjString2 + " " + nounString2 + "s";
 		} else if(grammarString.equals("Adj Last")){
@@ -134,6 +136,12 @@ public class Worker extends JPanel implements ActionListener{
 			name = "The " + nounString1 + "s";
 		} else if(grammarString.equals("Noun of Nouns")){
 			name = nounString1 + " of " + nounString2 + "s";
+		} else if(grammarString.equals("Noun")){
+			name = nounString1;
+		} else if(grammarString.equals("Verb the Noun")){
+			name = verbString + " the " + nounString1;
+		} else if(grammarString.equals("The Noun Boys")){
+			name = "The " + nounString1 + " Boys";
 		}
 		
 		return name;
@@ -146,12 +154,14 @@ public class Worker extends JPanel implements ActionListener{
 		grammars.add("Adj Noun");
 		grammars.add("The Adj Nouns");
 		grammars.add("Noun Noun");
-		grammars.add("Male Last and the Adj Nouns");
-		grammars.add("Female Last and the Adj Nouns");
+		grammars.add("First Last & the Adj Nouns");
 		grammars.add("Adj Noun and the Adj Nouns");
 		grammars.add("Adj Last");
 		grammars.add("The Nouns");
 		grammars.add("Noun of Nouns");
+		grammars.add("Noun");
+		grammars.add("Verb the Noun");
+		grammars.add("The Noun Boys");
 	}
 	
 	// https://stackoverflow.com/a/20389922
@@ -164,9 +174,15 @@ public class Worker extends JPanel implements ActionListener{
 	    return randomNum;
 	}
 	
+	public static boolean randBool() {
+		int randInt = randInt(0,1);
+		return randInt == 1;
+	}
+	
 	public static void populateDictionaries(){
 		String nounsURL = "https://raw.githubusercontent.com/pizzaboy314/indie-band-name-generator/master/dictionary%20files/nounslist.txt";
 		String adjsURL = "https://raw.githubusercontent.com/pizzaboy314/indie-band-name-generator/master/dictionary%20files/adjectiveslist.txt";
+		String verbsURL = "https://raw.githubusercontent.com/pizzaboy314/indie-band-name-generator/master/dictionary%20files/verbs.txt";
 		
 		String lastNamesURL = "https://raw.githubusercontent.com/pizzaboy314/indie-band-name-generator/master/dictionary%20files/lastnames.txt";
 		String firstMNamesURL = "https://raw.githubusercontent.com/pizzaboy314/indie-band-name-generator/master/dictionary%20files/firstmalenames.txt";
@@ -174,10 +190,10 @@ public class Worker extends JPanel implements ActionListener{
 		
 		nounsList = parseWords(nounsURL);
 		adjsList = parseWords(adjsURL);
+		verbList = parseWords(verbsURL);
 		lastNamesList = parseWords(lastNamesURL);
 		firstMNamesList = parseWords(firstMNamesURL);
 		firstFNamesList = parseWords(firstFNamesURL);
-		
 	}
 	
 	public static List<String> parseWords(String url){
